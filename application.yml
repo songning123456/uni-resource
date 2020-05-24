@@ -51,7 +51,4 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 30000 # 熔断的超时时间(毫秒)，默认只有2秒
-            
-uni:
-  name: uni-resource
     
