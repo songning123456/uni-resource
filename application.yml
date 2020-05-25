@@ -9,4 +9,4 @@ dubbo:
     protocol: register
   consumer:
     check:  false
-    timeout: 3000
+    timeout: 12000
