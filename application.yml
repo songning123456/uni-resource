@@ -6,7 +6,7 @@ spring:
           enabled: false # 是否与服务注册于发现组件进行结合
           lower-case-service-id: true # 是将请求路径上的服务名配置为小写(因为服务注册的时候，向注册中心注册时将服务名转成大写的了)
       routes:
-        - id: cykb-server
+        - id: cykb-es-server
           uri: lb://cykbEsServer
           predicates:
             - Path=/cykb/**
@@ -24,6 +24,24 @@ spring:
                 key-resolver: "#{@hostAddrKeyResolver}" # 限流的解析器的Bean对象的名字
                 redis-rate-limiter.replenishRate: 20 # 令牌通每秒填充平均速率
                 redis-rate-limiter.burstCapacity: 100 # 令牌桶的总容量
+        - id: uni-id
+            uri: lb://uniId
+            predicates:
+              - Path=/uni-id/**
+            filters:
+              - name: Hystrix # 熔断
+                args:
+                  name: fallbackcmd
+                  fallbackUri: forward:/fallback
+              - name: Retry # 重试路由器
+                args:
+                  retries: 3
+                  status: 503
+              - name: RequestRateLimiter # 限流
+                args:
+                  key-resolver: "#{@hostAddrKeyResolver}" # 限流的解析器的Bean对象的名字
+                  redis-rate-limiter.replenishRate: 20 # 令牌通每秒填充平均速率
+                  redis-rate-limiter.burstCapacity: 100 # 令牌桶的总容量
         - id: baidu-server
           uri: http://www.baidu.com
           predicates:
